@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+# dados gerados pelo pipeline (não versionar o dataset de 130k linhas)
+data/landing/*
+data/curated/*
+data/rejected/*
+!data/**/.gitkeep
+spark-warehouse/
+metastore_db/
+derby.log
+outputs/*
+!outputs/.gitkeep
