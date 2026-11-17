@@ -1,6 +1,4 @@
-teste
-    indent
-fim# Pipeline Big Data: Amazon Kindle Books 2023 → MongoDB
+# Pipeline Big Data: Amazon Kindle Books 2023 → MongoDB
 
 **Avaliação N3, Desenvolvimento com Linguagens Disruptivas I**
 Tema: Fluxo de Big Data para carga de dados em um BD NoSQL.
