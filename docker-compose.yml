@@ -1,0 +1,51 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: kindle-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-admin123}
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mongo-express:
+    image: mongo-express:1.0.2
+    container_name: kindle-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-admin123}@mongo:27017/
+      ME_CONFIG_BASICAUTH: "false"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  pipeline:
+    build: .
+    container_name: kindle-pipeline
+    profiles: ["pipeline"]
+    environment:
+      MONGO_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-admin123}@mongo:27017/?authSource=admin
+      MONGO_DB: ${MONGO_DB:-kindle}
+      PIPELINE_BASE_DIR: /app
+      SPARK_DRIVER_MEMORY: ${SPARK_DRIVER_MEMORY:-2g}
+      KAGGLE_USERNAME: ${KAGGLE_USERNAME:-}
+      KAGGLE_KEY: ${KAGGLE_KEY:-}
+    volumes:
+      - ./data:/app/data
+      - ./outputs:/app/outputs
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo_data:
